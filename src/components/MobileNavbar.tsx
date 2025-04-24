@@ -9,7 +9,7 @@ const MobileNavbar: React.FC = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between md:hidden h-16 px-4 bg-sidebar text-white">
+      <div className="fixed top-0 left-0 right-0 z-20 flex items-center justify-between md:hidden h-16 px-4 bg-sidebar text-white">
         <Link to="/" className="flex items-center">
           <div className="bg-white text-sidebar rounded-md p-1 mr-2">
             <Package className="h-6 w-6" />

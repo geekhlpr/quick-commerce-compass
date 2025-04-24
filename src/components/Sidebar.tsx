@@ -1,7 +1,10 @@
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/lib/auth';
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import {
   LayoutDashboard,
   Package,
@@ -10,7 +13,8 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
-  Settings
+  Settings,
+  LogOut
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -20,6 +24,25 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out."
+      });
+      navigate('/auth');
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to log out. Please try again."
+      });
+    }
+  };
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
@@ -57,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
       <nav className="flex-1 py-4 overflow-y-auto">
         <ul className="space-y-1 px-2">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
             return (
               <li key={item.path}>
                 <Link
@@ -80,20 +103,28 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
         </ul>
       </nav>
 
-      {/* User */}
-      {!collapsed && (
-        <div className="p-4 border-t border-sidebar-border">
-          <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-white">
-              <span>JD</span>
+      {/* User and Logout */}
+      <div className="p-4 border-t border-sidebar-border">
+        <div className="flex items-center justify-between">
+          {!collapsed && (
+            <div className="flex items-center">
+              <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-white">
+                <span>{user?.email?.charAt(0)?.toUpperCase() || 'U'}</span>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-white truncate max-w-[120px]">{user?.email || 'User'}</p>
+              </div>
             </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-white">John Doe</p>
-              <p className="text-xs text-white/70">Admin</p>
-            </div>
-          </div>
+          )}
+          <button 
+            onClick={handleLogout}
+            className="text-white hover:bg-white/10 p-2 rounded-md"
+            title="Logout"
+          >
+            <LogOut className="h-5 w-5" />
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 };

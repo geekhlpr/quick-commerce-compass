@@ -5,8 +5,11 @@ import { Calendar, FileText, Plus, User } from 'lucide-react';
 import DashboardMetrics from '@/components/DashboardMetrics';
 import SalesChart from '@/components/charts/SalesChart';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
+  
   const recentActivities = [
     { id: 1, action: 'New customer registered', time: '2 minutes ago', icon: <User className="h-4 w-4" /> },
     { id: 2, action: 'New order #1234 received', time: '1 hour ago', icon: <FileText className="h-4 w-4" /> },
@@ -29,7 +32,7 @@ const Dashboard: React.FC = () => {
             Overview of your business performance
           </p>
         </div>
-        <Button>
+        <Button onClick={() => navigate('/sales')}>
           <Plus className="mr-2 h-4 w-4" /> New Order
         </Button>
       </div>
@@ -38,7 +41,7 @@ const Dashboard: React.FC = () => {
 
       <SalesChart />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         {/* Recent Activities */}
         <Card className="card-hover">
           <CardHeader>
@@ -79,7 +82,7 @@ const Dashboard: React.FC = () => {
                     <p className="text-sm font-medium">{event.title}</p>
                     <p className="text-xs text-muted-foreground">{event.date}</p>
                   </div>
-                  <Button variant="outline" size="sm">View</Button>
+                  <Button variant="outline" size="sm" onClick={() => navigate('/calendar')}>View</Button>
                 </div>
               ))}
             </div>
